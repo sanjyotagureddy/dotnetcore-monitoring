@@ -1,4 +1,4 @@
-﻿namespace DotNet.Monitoring.Contracts.Entities;
+﻿namespace DotNet.Monitoring.Contracts.Entities.Base;
 
 public abstract class BaseEntity
 {
