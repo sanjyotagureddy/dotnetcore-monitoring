@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DotNet.Monitoring.AssemblyScanning.Container\DotNet.Monitoring.AssemblyScanning.Container.csproj" />
+    <ProjectReference Include="..\DotNet.Monitoring.Common\DotNet.Monitoring.Common.csproj" />
+    <ProjectReference Include="..\DotNet.Monitoring.Contracts.Presentation\DotNet.Monitoring.Contracts.Presentation.csproj" />
+    <ProjectReference Include="..\DotNet.Monitoring.Contracts.Services\DotNet.Monitoring.Contracts.Services.csproj" />
+  </ItemGroup>
+
+</Project>
