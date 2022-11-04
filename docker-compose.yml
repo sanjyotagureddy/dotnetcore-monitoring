@@ -1,6 +1,9 @@
 version: '3.4'
 
 services:
+  productdb:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+
   dotnet.monitoring.api:
     image: ${DOCKER_REGISTRY-}dotnetmonitoringapi
     build:

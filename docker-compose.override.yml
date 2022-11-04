@@ -1,13 +1,24 @@
 version: '3.4'
 
 services:
+  productdb:
+    container_name: productdb
+    environment:
+      SA_PASSWORD: "SwN12345678"
+      ACCEPT_EULA: "Y"
+    restart: always
+    ports:
+      - "1433:1433"
+
   dotnet.monitoring.api:
+    container_name: dotnet.monitoring.api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - "ConnectionStrings:Product=server=productdb;Database=ProductDb;User Id=sa;Password=SwN12345678;"
+    depends_on:
+      - productdb
     ports:
-      - "80"
-      - "443"
+      - "8001:80"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
