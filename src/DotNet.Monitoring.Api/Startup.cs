@@ -1,4 +1,3 @@
-using DotNet.Monitoring.AssemblyScanning.Container;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -27,7 +26,7 @@ public class Startup
       c.SwaggerDoc("v1", new OpenApiInfo { Title = "DotNet.Monitoring.Api", Version = "v1" });
     });
 
-    services.RegisterAssemblyScanningContainer();
+    services.RegisterApiServices(Configuration);
   }
 
   // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
