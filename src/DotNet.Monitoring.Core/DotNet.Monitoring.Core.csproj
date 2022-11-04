@@ -10,6 +10,7 @@
     <ProjectReference Include="..\DotNet.Monitoring.AssemblyScanning.Container\DotNet.Monitoring.AssemblyScanning.Container.csproj" />
     <ProjectReference Include="..\DotNet.Monitoring.Common\DotNet.Monitoring.Common.csproj" />
     <ProjectReference Include="..\DotNet.Monitoring.Contracts\DotNet.Monitoring.Contracts.csproj" />
+    <ProjectReference Include="..\DotNet.Monitoring.Infrastructure\DotNet.Monitoring.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
