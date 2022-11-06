@@ -10,15 +10,46 @@ services:
     ports:
       - "1433:1433"
 
+  elasticsearch:
+    container_name: elasticsearch
+    environment:
+      - node.name=elasticsearch
+      - cluster.name-es-docker-cluster
+      - xpack.security.enabled=false
+      - "discovery.type=single-node"
+    networks:
+      - es-net
+    volumes:
+      - data01:/urs/share/elasticsearch/data 
+    ports:
+      - 9200:9200
+
+  kibana:
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - es-net
+    depends_on:
+      - elasticsearch
+    ports:
+      - 5601:5601
+  
   dotnet.monitoring.api:
     container_name: dotnet.monitoring.api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - "ConnectionStrings:Product=server=productdb;Database=ProductDb;User Id=sa;Password=SwN12345678;"
+      - "ElasticConfiguration:Url=http://elasticsearch:9200/"
+      - "ConnectionStrings:Product=server=productdb;Database=ProductDb;User Id=sa;Password=SwN12345678;TrustServerCertificate=True;"
     depends_on:
       - productdb
+      - kibana
     ports:
       - "8001:80"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+volumes:
+  data01:
+    driver: local
+networks:
+  es-net:
+    driver: bridge

@@ -1,16 +1,13 @@
+using System;
 using DotNet.Monitoring.Api.Extensions;
 using DotNet.Monitoring.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using Serilog.Formatting.Compact;
 using Serilog.Formatting.Json;
-using Serilog.Formatting.Raw;
-using Serilog.Sinks.MSSqlServer;
-using Serilog.Sinks.SystemConsole.Themes;
+using Serilog.Sinks.Elasticsearch;
 
 namespace DotNet.Monitoring.Api;
 
@@ -34,8 +31,16 @@ public class Program
       {
         configuration.Enrich.FromLogContext()
           .ReadFrom.Configuration(context.Configuration)
-          .WriteTo.Console(outputTemplate: "[{SourceContext}]{NewLine}{Timestamp:ddMMyyyy HH:mm:ss} {Level:u4}] {Message:lj}{NewLine}{Exception}")
           .Enrich.WithMachineName()
+          .WriteTo.Console(outputTemplate: "[{SourceContext}]{NewLine}{Timestamp:ddMMyyyy HH:mm:ss} {Level:u4}] {Message:lj}{NewLine}{Exception}")
+          .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(context.Configuration["ElasticConfiguration:Uri"]))
+          {
+            IndexFormat = $"{context.Configuration["ApplicationName"]}-logs-{context.HostingEnvironment.EnvironmentName?.ToLower().Replace(".", "-")}-{DateTime.Now:yyyy-MM}",
+            AutoRegisterTemplate = true,
+            NumberOfShards = 2,
+            NumberOfReplicas = 1
+          })
+          .Enrich.WithProperty("Environment", context.HostingEnvironment.EnvironmentName ?? "Development")
           .WriteTo.File(new JsonFormatter(), "Logs\\logs.txt");
       })
       .ConfigureWebHostDefaults(webBuilder =>

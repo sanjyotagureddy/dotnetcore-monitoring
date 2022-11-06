@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using DotNet.Monitoring.Common.Errors;
 using DotNet.Monitoring.Contracts.Entities;
 using DotNet.Monitoring.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,10 +17,12 @@ namespace DotNet.Monitoring.Api.Controllers
   public class ProductsController : ControllerBase
   {
     private readonly ProductContext _context;
+    private readonly ILogger<ProductsController> _logger;
 
-    public ProductsController(ProductContext context)
+    public ProductsController(ProductContext context, ILogger<ProductsController> logger)
     {
       _context = context ?? throw new ArgumentNullException(nameof(context));
+      _logger = logger;
     }
 
     // GET: api/<ProductsController>
@@ -27,7 +30,13 @@ namespace DotNet.Monitoring.Api.Controllers
     [HttpGet]
     public async Task<IEnumerable<Product>> Get()
     {
-      return await _context.Products.ToListAsync();
+      var result = await _context.Products.ToListAsync();
+      _logger.LogInformation($"Get: count - {result.Count}");
+      _logger.LogTrace($"Get: count - {result.Count}");
+      _logger.LogDebug($"Get: count - {result.Count}");
+      var exception = ServerSide.RecordNotFound();
+      _logger.LogError(exception, exception.Message);
+      return result;
     }
 
     // GET api/<ProductsController>/5
