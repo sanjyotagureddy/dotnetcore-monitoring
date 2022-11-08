@@ -40,7 +40,7 @@ services:
     container_name: dotnet.monitoring.api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - "ElasticConfiguration:Url=http://elasticsearch:9200/"
+      - "ElasticConfiguration:Uri=http://host.docker.internal:9200"
       - "ConnectionStrings:Product=server=productdb;Database=ProductDb;User Id=sa;Password=SwN12345678;TrustServerCertificate=True;"
     depends_on:
       - productdb
