@@ -1,3 +1,6 @@
+using DotNet.Monitoring.Api.Middleware;
+using DotNet.Monitoring.Common.Settings;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -25,7 +28,9 @@ public class Startup
     {
       c.SwaggerDoc("v1", new OpenApiInfo { Title = "DotNet.Monitoring.Api", Version = "v1" });
     });
-
+    var config = new ApiSettings();
+    Configuration.Bind("ApiSettings", config);      //  <--- This
+    services.AddSingleton(config);
     services.RegisterApiServices(Configuration);
   }
 
@@ -38,12 +43,13 @@ public class Startup
       app.UseSwagger();
       app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "DotNet.Monitoring.Api v1"));
     }
-
+    app.UseMiddleware<PayloadLoggingMiddleware>();
     app.UseHttpsRedirection();
 
     app.UseRouting();
 
     app.UseAuthorization();
+
 
     app.UseEndpoints(endpoints =>
     {
