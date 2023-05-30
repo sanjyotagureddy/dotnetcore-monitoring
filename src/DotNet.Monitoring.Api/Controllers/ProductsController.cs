@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
+using AutoMapper;
+
 using DotNet.Monitoring.Common.Errors;
 using DotNet.Monitoring.Contracts.Entities;
+using DotNet.Monitoring.Contracts.Services.Dtos;
 using DotNet.Monitoring.Infrastructure.Persistence;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -18,32 +23,43 @@ namespace DotNet.Monitoring.Api.Controllers
   {
     private readonly ProductContext _context;
     private readonly ILogger<ProductsController> _logger;
+    private readonly IMapper _mapper;
 
-    public ProductsController(ProductContext context, ILogger<ProductsController> logger)
+    public ProductsController(ProductContext context, ILogger<ProductsController> logger, IMapper mapper)
     {
       _context = context ?? throw new ArgumentNullException(nameof(context));
       _logger = logger;
+      _mapper = mapper;
     }
 
     // GET: api/<ProductsController>
 
     [HttpGet]
-    public async Task<IEnumerable<Product>> Get()
+    public async Task<ActionResult<IEnumerable<Product>>> Get()
     {
-      var result = await _context.Products.ToListAsync();
-      _logger.LogInformation($"Get: count - {result.Count}");
-      _logger.LogTrace($"Get: count - {result.Count}");
-      _logger.LogDebug($"Get: count - {result.Count}");
-      var exception = ServerSide.RecordNotFound();
-      _logger.LogError(exception, exception.Message);
-      return result;
+      var products = await _context.Products.ToListAsync();
+      _logger.LogInformation($"Get: count - {products.Count}");
+      _logger.LogTrace($"Get: count - {products.Count}");
+      _logger.LogDebug($"Get: count - {products.Count}");
+
+      var result = _mapper.Map<IEnumerable<ProductDto>>(products);
+
+      return Ok(result);
     }
 
     // GET api/<ProductsController>/5
     [HttpGet("{id}")]
-    public string Get(int id)
+    public async Task<ActionResult<ProductDto>> Get(int id)
     {
-      return "value";
+      var result = await _context.Products.FindAsync(id);
+      if (result == null)
+      {
+        var exception = ServerSide.RecordNotFound();
+        _logger.LogError(exception, exception.Message);
+        return NotFound(exception);
+      }
+      var productDto = _mapper.Map<ProductDto>(result);
+      return Ok(productDto);
     }
 
     // POST api/<ProductsController>
