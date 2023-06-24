@@ -38,10 +38,6 @@ namespace DotNet.Monitoring.Api.Controllers
     public async Task<ActionResult<IEnumerable<Product>>> Get()
     {
       var products = await _context.Products.ToListAsync();
-      _logger.LogInformation($"Get: count - {products.Count}");
-      _logger.LogTrace($"Get: count - {products.Count}");
-      _logger.LogDebug($"Get: count - {products.Count}");
-
       var result = _mapper.Map<IEnumerable<ProductDto>>(products);
 
       return Ok(result);
