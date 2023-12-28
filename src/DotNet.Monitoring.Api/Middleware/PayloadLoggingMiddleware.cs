@@ -125,7 +125,7 @@ namespace DotNet.Monitoring.Api.Middleware
         .Append("StatusCode: ").Append(payload.ResponseCode).AppendLine()
         .Append("Response Body: ").AppendLine(payload.Payload);
 
-      _logger.LogDebug(stringBuilder.ToString());
+      _logger.LogTrace(stringBuilder.ToString());
 
       return payload;
     }
